@@ -10,13 +10,25 @@
 </head>
 <body>
     <div class="app">
-        <!-- Header -->
-        <header class="header">
-            <div class="header-content">
-                <h1 class="header-title">🌍 GeoFlow Tracker</h1>
-                <p class="header-subtitle">Real-time Location Tracking</p>
+        <!-- User ID Modal -->
+        <div class="modal" id="userIdModal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>👤 Enter Your User ID</h2>
+                    <p class="modal-subtitle">Create a unique identifier for tracking</p>
+                </div>
+                <div class="modal-body">
+                    <input type="text" id="userIdInput" class="input-field" placeholder="e.g., john_doe, user_001" maxlength="50">
+                    <p class="input-hint">Use letters, numbers, underscores, and hyphens only</p>
+                    <div class="validation-message" id="validationMessage"></div>
+                </div>
+                <div class="modal-footer">
+                    <button id="submitUserIdBtn" class="btn btn-primary btn-block">
+                        ✓ Start Tracking
+                    </button>
+                </div>
             </div>
-        </header>
+        </div>
 
         <!-- Main Content -->
         <main class="main-content">
@@ -32,7 +44,6 @@
                         <span class="status-text" id="statusText">Initializing...</span>
                     </div>
                     <div class="status-details" id="statusDetails">
-                        <p class="detail-item">Permission: <span id="permissionStatus">Checking...</span></p>
                         <p class="detail-item">Accuracy: <span id="accuracyStatus">—</span></p>
                         <p class="detail-item">Last Update: <span id="lastUpdateTime">Never</span></p>
                     </div>
@@ -91,52 +102,6 @@
                         <p><strong>Accuracy:</strong> <span id="currentAccuracy">—</span></p>
                         <p><strong>Timestamp:</strong> <span id="currentTime">—</span></p>
                     </div>
-                </div>
-            </section>
-
-            <!-- Recent Locations Card -->
-            <section class="card logs-card">
-                <div class="card-header">
-                    <h2>Recent Locations</h2>
-                    <span class="badge" id="logCount">0</span>
-                </div>
-                <div class="card-body">
-                    <div class="logs-container" id="logsContainer">
-                        <p class="logs-placeholder">No locations tracked yet</p>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Configuration Card -->
-            <section class="card config-card">
-                <div class="card-header">
-                    <h2>Configuration</h2>
-                </div>
-                <div class="card-body">
-                    <div class="config-item">
-                        <label for="backendUrl">Backend URL:</label>
-                        <input type="text" id="backendUrl" class="input-field" placeholder="http://127.0.0.1:8080/api/v1/tracking/push">
-                    </div>
-                    <div class="config-item">
-                        <label for="trackingInterval">Tracking Interval (seconds):</label>
-                        <input type="number" id="trackingInterval" class="input-field" value="10" min="5" max="60">
-                    </div>
-                    <button id="saveConfigBtn" class="btn btn-secondary btn-block">
-                        💾 Save Config
-                    </button>
-                </div>
-            </section>
-
-            <!-- Debug Console Card -->
-            <section class="card debug-card">
-                <div class="card-header">
-                    <h2>Debug Console</h2>
-                </div>
-                <div class="card-body">
-                    <div class="debug-output" id="debugOutput"></div>
-                    <button id="clearDebugBtn" class="btn btn-secondary btn-block" style="margin-top: 10px;">
-                        🗑️ Clear Debug
-                    </button>
                 </div>
             </section>
 

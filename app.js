@@ -21,12 +21,13 @@ class GeoFlowTracker {
         this.state = {
             isTracking: false,
             isInitialized: false,
-            userId: this.getUserId(),
-            sessionCount: parseInt(localStorage.getItem('session_count') || 0),
+            userId: null,
+            sessionCount: 0,
             locations: [],
             debugLogs: [],
             lastLocation: null,
-            lastError: null
+            lastError: null,
+            userIdSet: false
         };
 
         // Tracking
@@ -48,7 +49,6 @@ class GeoFlowTracker {
         // Setup UI
         this.setupEventListeners();
         this.updateDeviceInfo();
-        this.loadConfigFromStorage();
         
         // Check geolocation support
         if (!navigator.geolocation) {
@@ -60,9 +60,8 @@ class GeoFlowTracker {
         // Check permissions
         await this.checkPermissions();
         
-        this.state.isInitialized = true;
-        this.setStatus('✓ Ready to track', 'success');
-        this.debug('Initialization complete', 'system');
+        // Show user ID modal
+        this.showUserIdModal();
     }
 
     /**
@@ -110,19 +109,195 @@ class GeoFlowTracker {
         // Control buttons
         document.getElementById('startBtn')?.addEventListener('click', () => this.startTracking());
         document.getElementById('stopBtn')?.addEventListener('click', () => this.stopTracking());
-        document.getElementById('clearBtn')?.addEventListener('click', () => this.clearLogs());
         
-        // Configuration
-        document.getElementById('saveConfigBtn')?.addEventListener('click', () => this.saveConfig());
+        // User ID Modal
+        document.getElementById('submitUserIdBtn')?.addEventListener('click', () => this.submitUserId());
+        document.getElementById('userIdInput')?.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') this.submitUserId();
+        });
+        document.getElementById('userIdInput')?.addEventListener('input', (e) => {
+            this.validateUserIdInput(e.target.value);
+        });
+    }
+
+    /**
+     * Show user ID modal
+     */
+    showUserIdModal() {
+        const modal = document.getElementById('userIdModal');
+        const input = document.getElementById('userIdInput');
         
-        // Debug
-        document.getElementById('clearDebugBtn')?.addEventListener('click', () => this.clearDebug());
+        if (modal) {
+            modal.style.display = 'flex';
+            input?.focus();
+        }
+        
+        this.debug('User ID modal shown', 'info');
+    }
+
+    /**
+     * Hide user ID modal
+     */
+    hideUserIdModal() {
+        const modal = document.getElementById('userIdModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    /**
+     * Validate user ID input format
+     */
+    validateUserIdInput(value) {
+        const validationMessage = document.getElementById('validationMessage');
+        const submitBtn = document.getElementById('submitUserIdBtn');
+        
+        if (!validationMessage || !submitBtn) return;
+
+        // Clear message
+        validationMessage.textContent = '';
+        validationMessage.className = 'validation-message';
+
+        if (!value) {
+            submitBtn.disabled = true;
+            return;
+        }
+
+        // Check format: only alphanumeric, underscore, hyphen
+        const validFormat = /^[a-zA-Z0-9_-]+$/.test(value);
+        if (!validFormat) {
+            validationMessage.textContent = '⚠️ Only letters, numbers, underscores, and hyphens allowed';
+            validationMessage.className = 'validation-message error';
+            submitBtn.disabled = true;
+            return;
+        }
+
+        // Check length
+        if (value.length < 3) {
+            validationMessage.textContent = '⚠️ User ID must be at least 3 characters';
+            validationMessage.className = 'validation-message warning';
+            submitBtn.disabled = true;
+            return;
+        }
+
+        if (value.length > 50) {
+            validationMessage.textContent = '⚠️ User ID must not exceed 50 characters';
+            validationMessage.className = 'validation-message error';
+            submitBtn.disabled = true;
+            return;
+        }
+
+        // All good
+        validationMessage.textContent = '✓ Valid User ID';
+        validationMessage.className = 'validation-message success';
+        submitBtn.disabled = false;
+    }
+
+    /**
+     * Submit and validate user ID
+     */
+    async submitUserId() {
+        const input = document.getElementById('userIdInput');
+        const userId = input?.value.trim();
+
+        if (!userId) {
+            this.showValidationError('Please enter a User ID');
+            return;
+        }
+
+        // Validate format
+        if (!/^[a-zA-Z0-9_-]+$/.test(userId) || userId.length < 3 || userId.length > 50) {
+            this.showValidationError('Invalid User ID format');
+            return;
+        }
+
+        this.debug(`Checking User ID availability: ${userId}`, 'info');
+        this.setStatus('🔄 Checking User ID...', 'info');
+
+        try {
+            // Check if user ID already exists
+            const historyUrl = `${this.config.backendUrl.replace('/push', '')}/history/${userId}`;
+            const response = await fetch(historyUrl, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                
+                // If we get data with any tracking records, user ID is taken
+                if (data && Array.isArray(data) && data.length > 0) {
+                    this.showValidationError(`❌ User ID '${userId}' already exists with ${data.length} tracking records. Please use a different User ID.`);
+                    this.debug(`User ID '${userId}' already in use`, 'warning');
+                    return;
+                }
+            }
+
+            // User ID is available
+            this.state.userId = userId;
+            this.state.userIdSet = true;
+            this.state.sessionCount = parseInt(localStorage.getItem(`session_count_${userId}`) || 0);
+            
+            localStorage.setItem('current_user_id', userId);
+            
+            this.debug(`✓ User ID '${userId}' verified and set`, 'success');
+            this.setStatus('✓ Ready to track', 'success');
+            this.updateDeviceInfo();
+            this.hideUserIdModal();
+            
+            // Mark as initialized
+            this.state.isInitialized = true;
+
+        } catch (error) {
+            // If error checking, allow user to proceed (might be backend temporarily unavailable)
+            // But warn them
+            this.debug(`⚠️ Could not verify User ID online: ${error.message}`, 'warning');
+            
+            // Check locally if this user ID has been used before
+            const localData = JSON.parse(localStorage.getItem(`tracking_data_${userId}`) || '[]');
+            if (localData.length > 0) {
+                this.showValidationError(`❌ User ID '${userId}' already used locally. Please use a different User ID.`);
+                return;
+            }
+
+            // Allow proceeding with warning
+            this.state.userId = userId;
+            this.state.userIdSet = true;
+            localStorage.setItem('current_user_id', userId);
+            this.updateDeviceInfo();
+            this.hideUserIdModal();
+            this.state.isInitialized = true;
+            this.setStatus('⚠️ Offline mode - Ready to track', 'warning');
+            this.debug(`User ID set to '${userId}' (offline validation)`, 'info');
+        }
+    }
+
+    /**
+     * Show validation error message
+     */
+    showValidationError(message) {
+        const validationMessage = document.getElementById('validationMessage');
+        if (validationMessage) {
+            validationMessage.textContent = message;
+            validationMessage.className = 'validation-message error';
+        }
+        this.setStatus(message, 'error');
+        this.debug(message, 'error');
     }
 
     /**
      * Start location tracking
      */
     startTracking() {
+        if (!this.state.userIdSet) {
+            this.debug('User ID not set. Please set User ID first.', 'error');
+            this.setStatus('❌ Please set User ID first', 'error');
+            this.showUserIdModal();
+            return;
+        }
+
         if (this.state.isTracking) {
             this.debug('Tracking already active', 'warning');
             return;
@@ -149,7 +324,7 @@ class GeoFlowTracker {
 
         this.debug(`Tracking started (Watch active)`, 'success');
         this.setStatus('🟢 Tracking active', 'success');
-        localStorage.setItem('session_count', this.state.sessionCount);
+        localStorage.setItem(`session_count_${this.state.userId}`, this.state.sessionCount);
         this.updateSessionCount();
     }
 
@@ -311,51 +486,10 @@ class GeoFlowTracker {
     }
 
     /**
-     * Add location to log
+     * Add location to internal tracking
      */
     addLocationLog(data) {
         this.state.locations.push(data);
-        
-        const container = document.getElementById('logsContainer');
-        if (!container) return;
-
-        // Remove placeholder
-        const placeholder = container.querySelector('.logs-placeholder');
-        if (placeholder) placeholder.remove();
-
-        // Add entry
-        const entry = document.createElement('div');
-        entry.className = 'log-entry';
-        entry.innerHTML = `
-            <div class="log-time">${new Date(data.timestamp).toLocaleTimeString()}</div>
-            <div class="log-coords">
-                <span>📍 ${data.latitude.toFixed(6)}, ${data.longitude.toFixed(6)}</span>
-                <span class="log-accuracy">±${data.accuracy.toFixed(0)}m</span>
-            </div>
-        `;
-        
-        container.insertBefore(entry, container.firstChild);
-
-        // Limit to 20 entries
-        while (container.children.length > 20) {
-            container.removeChild(container.lastChild);
-        }
-
-        // Update count
-        document.getElementById('logCount').textContent = this.state.locations.length;
-    }
-
-    /**
-     * Clear all logs
-     */
-    clearLogs() {
-        this.state.locations = [];
-        const container = document.getElementById('logsContainer');
-        if (container) {
-            container.innerHTML = '<p class="logs-placeholder">No locations tracked yet</p>';
-        }
-        document.getElementById('logCount').textContent = '0';
-        this.debug('Logs cleared', 'info');
     }
 
     /**
@@ -384,9 +518,9 @@ class GeoFlowTracker {
      * Get or create user ID
      */
     getUserId() {
-        // Fixed user ID for testing
-        const userId = 'user123';
-        return userId;
+        // Try to get from localStorage
+        const savedUserId = localStorage.getItem('current_user_id');
+        return savedUserId || null;
     }
 
     /**
@@ -412,7 +546,7 @@ class GeoFlowTracker {
     }
 
     /**
-     * Add debug log
+     * Add debug log (simplified - no UI display)
      */
     debug(message, type = 'info') {
         const timestamp = new Date().toLocaleTimeString();
@@ -423,39 +557,6 @@ class GeoFlowTracker {
             this.state.debugLogs.shift();
         }
 
-        this.updateDebugDisplay();
-        console.log(`%c${log}`, this.getDebugStyle(type));
-    }
-
-    /**
-     * Update debug console display
-     */
-    updateDebugDisplay() {
-        const output = document.getElementById('debugOutput');
-        if (!output) return;
-
-        output.innerHTML = this.state.debugLogs
-            .map(log => `<div class="debug-line debug-${log.type}">[${log.timestamp}] ${log.message}</div>`)
-            .join('');
-        
-        // Auto scroll to bottom
-        output.scrollTop = output.scrollHeight;
-    }
-
-    /**
-     * Clear debug logs
-     */
-    clearDebug() {
-        this.state.debugLogs = [];
-        const output = document.getElementById('debugOutput');
-        if (output) output.innerHTML = '';
-        this.debug('Debug console cleared', 'info');
-    }
-
-    /**
-     * Get debug style for console
-     */
-    getDebugStyle(type) {
         const styles = {
             'info': 'color: #3498db;',
             'success': 'color: #27ae60; font-weight: bold;',
@@ -463,39 +564,7 @@ class GeoFlowTracker {
             'error': 'color: #e74c3c; font-weight: bold;',
             'system': 'color: #95a5a6; font-style: italic;'
         };
-        return styles[type] || styles.info;
-    }
-
-    /**
-     * Load configuration from storage
-     */
-    loadConfigFromStorage() {
-        const url = document.getElementById('backendUrl');
-        const interval = document.getElementById('trackingInterval');
-        
-        if (url) url.value = this.config.backendUrl;
-        if (interval) interval.value = this.config.trackingInterval / 1000;
-    }
-
-    /**
-     * Save configuration
-     */
-    saveConfig() {
-        const url = document.getElementById('backendUrl')?.value;
-        const interval = document.getElementById('trackingInterval')?.value;
-
-        if (url) {
-            this.config.backendUrl = url;
-            localStorage.setItem('backend_url', url);
-        }
-
-        if (interval) {
-            this.config.trackingInterval = parseInt(interval) * 1000;
-            localStorage.setItem('tracking_interval', interval);
-        }
-
-        this.debug('Configuration saved', 'success');
-        alert('Configuration saved successfully!');
+        console.log(`%c${log}`, styles[type] || styles.info);
     }
 }
 
