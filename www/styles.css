@@ -1,0 +1,527 @@
+/* ============================================
+   GeoFlow Tracker - Modern Mobile App Styles
+   ============================================ */
+
+:root {
+    --primary: #3498db;
+    --success: #27ae60;
+    --danger: #e74c3c;
+    --warning: #f39c12;
+    --info: #3498db;
+    --secondary: #95a5a6;
+    --light: #ecf0f1;
+    --dark: #2c3e50;
+    --border: #bdc3c7;
+    --radius: 12px;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html, body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    color: var(--dark);
+}
+
+body {
+    padding: 10px;
+}
+
+.app {
+    max-width: 500px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* ============================================
+   Header Styles
+   ============================================ */
+
+.header {
+    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+    color: white;
+    padding: 25px 20px;
+    text-align: center;
+}
+
+.header-title {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+
+.header-subtitle {
+    font-size: 13px;
+    opacity: 0.9;
+    letter-spacing: 0.5px;
+}
+
+/* ============================================
+   Main Content
+   ============================================ */
+
+.main-content {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+}
+
+/* ============================================
+   Card Styles
+   ============================================ */
+
+.card {
+    background: white;
+    border: 1px solid var(--light);
+    border-radius: var(--radius);
+    margin-bottom: 15px;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+}
+
+.card-header {
+    background: var(--light);
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-header h2 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--dark);
+}
+
+.card-body {
+    padding: 15px;
+}
+
+/* ============================================
+   Status Indicator
+   ============================================ */
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px;
+    background: var(--light);
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+
+.status-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+}
+
+.status-dot.status-success {
+    background: var(--success);
+}
+
+.status-dot.status-error {
+    background: var(--danger);
+}
+
+.status-dot.status-warning {
+    background: var(--warning);
+}
+
+.status-dot.status-info {
+    background: var(--info);
+}
+
+.status-text {
+    font-weight: 500;
+    font-size: 14px;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.6;
+    }
+}
+
+.status-details {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 13px;
+}
+
+/* ============================================
+   Detail Items
+   ============================================ */
+
+.detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--light);
+}
+
+.detail-item:last-child {
+    border-bottom: none;
+}
+
+.detail-item span {
+    font-weight: 500;
+    color: var(--primary);
+}
+
+.detail-item code {
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 12px;
+    background: var(--light);
+    padding: 3px 8px;
+    border-radius: 4px;
+}
+
+/* ============================================
+   Button Styles
+   ============================================ */
+
+.btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    display: inline-block;
+}
+
+.btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+}
+
+.btn-danger {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger:hover:not(:disabled) {
+    background: #c0392b;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(231, 76, 60, 0.3);
+}
+
+.btn-secondary {
+    background: var(--secondary);
+    color: white;
+}
+
+.btn-secondary:hover:not(:disabled) {
+    background: #7f8c8d;
+    transform: translateY(-2px);
+}
+
+.btn-lg {
+    padding: 12px 24px;
+    font-size: 15px;
+    width: 100%;
+}
+
+.btn-block {
+    width: 100%;
+}
+
+.button-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* ============================================
+   Location Display
+   ============================================ */
+
+.location-display {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+.location-item {
+    background: var(--light);
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.location-item label {
+    display: block;
+    font-size: 12px;
+    color: var(--secondary);
+    margin-bottom: 4px;
+    font-weight: 600;
+}
+
+.location-item code {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--primary);
+    font-family: 'Monaco', monospace;
+}
+
+.location-extra {
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.location-extra p {
+    padding: 6px 0;
+}
+
+/* ============================================
+   Logs Container
+   ============================================ */
+
+.logs-container {
+    max-height: 300px;
+    overflow-y: auto;
+    background: var(--light);
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.logs-placeholder {
+    text-align: center;
+    color: var(--secondary);
+    padding: 30px 10px;
+    font-size: 13px;
+}
+
+.log-entry {
+    background: white;
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    border-left: 4px solid var(--success);
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.log-time {
+    color: var(--primary);
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.log-coords {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--dark);
+}
+
+.log-accuracy {
+    background: var(--light);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: var(--secondary);
+}
+
+/* ============================================
+   Badge
+   ============================================ */
+
+.badge {
+    display: inline-block;
+    background: var(--primary);
+    color: white;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* ============================================
+   Configuration
+   ============================================ */
+
+.config-item {
+    margin-bottom: 12px;
+}
+
+.config-item label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    color: var(--dark);
+}
+
+.input-field {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    font-size: 13px;
+    font-family: inherit;
+    transition: border-color 0.3s ease;
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* ============================================
+   Debug Console
+   ============================================ */
+
+.debug-output {
+    background: #1e1e1e;
+    color: #d4d4d4;
+    padding: 12px;
+    border-radius: 6px;
+    font-family: 'Monaco', 'Courier New', monospace;
+    font-size: 11px;
+    max-height: 200px;
+    overflow-y: auto;
+    line-height: 1.5;
+    margin-bottom: 10px;
+}
+
+.debug-line {
+    padding: 3px 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.debug-line.debug-info {
+    color: #569cd6;
+}
+
+.debug-line.debug-success {
+    color: #6a9955;
+}
+
+.debug-line.debug-warning {
+    color: #dcdcaa;
+}
+
+.debug-line.debug-error {
+    color: #f48771;
+}
+
+.debug-line.debug-system {
+    color: #858585;
+    font-style: italic;
+}
+
+/* ============================================
+   Footer
+   ============================================ */
+
+.footer {
+    background: var(--light);
+    padding: 12px 15px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--secondary);
+    border-top: 1px solid #ddd;
+}
+
+/* ============================================
+   Scrollbar Styling
+   ============================================ */
+
+.logs-container::-webkit-scrollbar,
+.debug-output::-webkit-scrollbar {
+    width: 6px;
+}
+
+.logs-container::-webkit-scrollbar-track,
+.debug-output::-webkit-scrollbar-track {
+    background: var(--light);
+    border-radius: 3px;
+}
+
+.logs-container::-webkit-scrollbar-thumb,
+.debug-output::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: 3px;
+}
+
+.logs-container::-webkit-scrollbar-thumb:hover,
+.debug-output::-webkit-scrollbar-thumb:hover {
+    background: var(--secondary);
+}
+
+/* ============================================
+   Responsive Design
+   ============================================ */
+
+@media (max-width: 480px) {
+    body {
+        padding: 5px;
+    }
+
+    .header {
+        padding: 20px 15px;
+    }
+
+    .header-title {
+        font-size: 24px;
+    }
+
+    .main-content {
+        padding: 12px;
+    }
+
+    .card {
+        margin-bottom: 12px;
+    }
+
+    .location-display {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        grid-template-columns: 1fr;
+    }
+}

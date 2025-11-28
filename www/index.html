@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Real-time GPS location tracking app">
+    <meta name="theme-color" content="#3498db">
+    <title>GeoFlow Tracker</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="app">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <h1 class="header-title">🌍 GeoFlow Tracker</h1>
+                <p class="header-subtitle">Real-time Location Tracking</p>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            
+            <!-- Status Card -->
+            <section class="card status-card">
+                <div class="card-header">
+                    <h2>Status</h2>
+                </div>
+                <div class="card-body">
+                    <div class="status-indicator" id="statusIndicator">
+                        <span class="status-dot" id="statusDot"></span>
+                        <span class="status-text" id="statusText">Initializing...</span>
+                    </div>
+                    <div class="status-details" id="statusDetails">
+                        <p class="detail-item">Permission: <span id="permissionStatus">Checking...</span></p>
+                        <p class="detail-item">Accuracy: <span id="accuracyStatus">—</span></p>
+                        <p class="detail-item">Last Update: <span id="lastUpdateTime">Never</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Device Info Card -->
+            <section class="card info-card">
+                <div class="card-header">
+                    <h2>Device Information</h2>
+                </div>
+                <div class="card-body">
+                    <p class="detail-item">User ID: <code id="userID">—</code></p>
+                    <p class="detail-item">Device: <code id="deviceInfo">—</code></p>
+                    <p class="detail-item">Tracking Sessions: <code id="sessionCount">0</code></p>
+                </div>
+            </section>
+
+            <!-- Controls Card -->
+            <section class="card controls-card">
+                <div class="card-header">
+                    <h2>Controls</h2>
+                </div>
+                <div class="card-body">
+                    <div class="button-group">
+                        <button id="startBtn" class="btn btn-primary btn-lg">
+                            ▶️ Start Tracking
+                        </button>
+                        <button id="stopBtn" class="btn btn-danger btn-lg" disabled>
+                            ⏹️ Stop Tracking
+                        </button>
+                    </div>
+                    <button id="clearBtn" class="btn btn-secondary btn-block" style="margin-top: 10px;">
+                        🗑️ Clear Logs
+                    </button>
+                </div>
+            </section>
+
+            <!-- Current Location Card -->
+            <section class="card location-card">
+                <div class="card-header">
+                    <h2>Current Location</h2>
+                </div>
+                <div class="card-body">
+                    <div class="location-display">
+                        <div class="location-item">
+                            <label>Latitude</label>
+                            <code id="currentLat">—</code>
+                        </div>
+                        <div class="location-item">
+                            <label>Longitude</label>
+                            <code id="currentLon">—</code>
+                        </div>
+                    </div>
+                    <div class="location-extra">
+                        <p><strong>Accuracy:</strong> <span id="currentAccuracy">—</span></p>
+                        <p><strong>Timestamp:</strong> <span id="currentTime">—</span></p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Recent Locations Card -->
+            <section class="card logs-card">
+                <div class="card-header">
+                    <h2>Recent Locations</h2>
+                    <span class="badge" id="logCount">0</span>
+                </div>
+                <div class="card-body">
+                    <div class="logs-container" id="logsContainer">
+                        <p class="logs-placeholder">No locations tracked yet</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Configuration Card -->
+            <section class="card config-card">
+                <div class="card-header">
+                    <h2>Configuration</h2>
+                </div>
+                <div class="card-body">
+                    <div class="config-item">
+                        <label for="backendUrl">Backend URL:</label>
+                        <input type="text" id="backendUrl" class="input-field" placeholder="http://127.0.0.1:8080/api/v1/tracking/push">
+                    </div>
+                    <div class="config-item">
+                        <label for="trackingInterval">Tracking Interval (seconds):</label>
+                        <input type="number" id="trackingInterval" class="input-field" value="10" min="5" max="60">
+                    </div>
+                    <button id="saveConfigBtn" class="btn btn-secondary btn-block">
+                        💾 Save Config
+                    </button>
+                </div>
+            </section>
+
+            <!-- Debug Console Card -->
+            <section class="card debug-card">
+                <div class="card-header">
+                    <h2>Debug Console</h2>
+                </div>
+                <div class="card-body">
+                    <div class="debug-output" id="debugOutput"></div>
+                    <button id="clearDebugBtn" class="btn btn-secondary btn-block" style="margin-top: 10px;">
+                        🗑️ Clear Debug
+                    </button>
+                </div>
+            </section>
+
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>GeoFlow Tracker © 2025 | v1.0.0</p>
+        </footer>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
