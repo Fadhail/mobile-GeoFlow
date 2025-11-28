@@ -7,7 +7,7 @@ class GeoFlowTracker {
     constructor() {
         // Configuration
         this.config = {
-            backendUrl: 'https://k04bfg24-8080.asse.devtunnels.ms/api/v1/tracking/push',
+            backendUrl: 'https://geoflow-backend.irc-enter.tech/api/v1/tracking/push',
             trackingInterval: (localStorage.getItem('tracking_interval') || 10) * 1000,
             maxDebugLogs: 50,
             geolocationOptions: {
